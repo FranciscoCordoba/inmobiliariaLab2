@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS propietarios (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    dni INTEGER NOT NULL,
+    telefono VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS inquilinos (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    dni INTEGER NOT NULL,
+    telefono VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL
+);
