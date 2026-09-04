@@ -85,23 +85,48 @@ export function Inquilinos() {
 
   const validateForm = () => {
     const errors: Partial<Record<keyof Persona, string>> = {};
-    if (!currentInquilino.nombre.trim()) errors.nombre = "El nombre es obligatorio";
-    if (!currentInquilino.apellido.trim()) errors.apellido = "El apellido es obligatorio";
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s'-]+$/;
+    const hasLetterRegex = /[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ]/;
+    const phoneRegex = /^[0-9+\s\-()]+$/;
+    const hasDigitRegex = /[0-9]/;
+
+    const nombre = currentInquilino.nombre.trim();
+    if (!nombre) {
+      errors.nombre = "El nombre es obligatorio";
+    } else if (!hasLetterRegex.test(nombre) || !nameRegex.test(nombre)) {
+      errors.nombre = "El nombre debe contener letras y no puede contener números";
+    }
+
+    const apellido = currentInquilino.apellido.trim();
+    if (!apellido) {
+      errors.apellido = "El apellido es obligatorio";
+    } else if (!hasLetterRegex.test(apellido) || !nameRegex.test(apellido)) {
+      errors.apellido = "El apellido debe contener letras y no puede contener números";
+    }
+
     if (!currentInquilino.dni) {
       errors.dni = "El DNI es obligatorio";
     } else if (isNaN(Number(currentInquilino.dni)) || Number(currentInquilino.dni) <= 0) {
       errors.dni = "Ingrese un número de DNI válido";
     }
-    if (!currentInquilino.telefono.trim()) errors.telefono = "El teléfono es obligatorio";
+
+    const telefono = currentInquilino.telefono.trim();
+    if (!telefono) {
+      errors.telefono = "El teléfono es obligatorio";
+    } else if (!hasDigitRegex.test(telefono) || !phoneRegex.test(telefono)) {
+      errors.telefono = "El teléfono debe contener números y no puede contener solo letras";
+    }
+
     if (!currentInquilino.email.trim()) {
       errors.email = "El correo electrónico es obligatorio";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(currentInquilino.email)) {
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(currentInquilino.email.trim())) {
       errors.email = "Ingrese un correo electrónico válido";
     }
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
