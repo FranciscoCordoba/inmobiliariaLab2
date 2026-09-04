@@ -1,0 +1,25 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "runtimeExecutable": "npx",
+            "runtimeArgs": [
+                "tsx",
+                "--experimental-network-inspection"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/server/src/app.ts",
+            "console": "integratedTerminal",
+            "sourceMaps": true,
+            "envFile": "${workspaceFolder}/server/.env"
+        }
+    ]
+}

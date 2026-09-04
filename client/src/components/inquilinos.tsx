@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
-import { Plus, Search, Pencil, Trash2, X, AlertCircle, CheckCircle2, Phone, Mail } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, X, AlertCircle, CheckCircle2, Phone, Mail, Eye, User } from "lucide-react";
 import type { Persona } from "../types";
 
 
@@ -18,8 +18,10 @@ export function Inquilinos() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [currentInquilino, setCurrentInquilino] = useState<Persona>(initialFormData);
+  const [selectedInquilino, setSelectedInquilino] = useState<Required<Persona> | null>(null);
   const [inquilinoToDelete, setInquilinoToDelete] = useState<Required<Persona> | null>(null);
   const [formErrors, setFormErrors] = useState<Partial<Record<keyof Persona, string>>>({});
   const [alert, setAlert] = useState<{ type: "success" | "error"; message: string } | null>(null);
@@ -60,6 +62,20 @@ export function Inquilinos() {
     setCurrentInquilino(item);
     setFormErrors({});
     setIsModalOpen(true);
+  };
+
+  const handleOpenDetailsModal = async (item: Required<Persona>) => {
+    try {
+      const res = await fetch(`${API_URL}/${item.id}`);
+      if (res.ok) {
+        setSelectedInquilino(await res.json());
+      } else {
+        setSelectedInquilino(item);
+      }
+    } catch {
+      setSelectedInquilino(item);
+    }
+    setIsDetailsModalOpen(true);
   };
 
   const handleOpenDeleteModal = (item: Required<Persona>) => {
@@ -163,7 +179,7 @@ export function Inquilinos() {
       {/* Alerta de notificación */}
       {alert && (
         <div
-          className={`flex items-center gap-3 p-4 rounded-xl text-sm font-medium shadow-sm transition-all duration-300 ${
+          className={`flex items-center gap-3 p-4 rounded-xl text-sm font-medium shadow-xs transition-all ${
             alert.type === "success"
               ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
               : "bg-rose-50 text-rose-800 border border-rose-200"
@@ -185,7 +201,7 @@ export function Inquilinos() {
             <span>Gestión de Inquilinos</span>
           </h1>
           <p className="text-slate-500 text-sm mt-1">
-            Administra altas, bajas y modificaciones de los inquilinos de la inmobiliaria.
+            Administra altas, bajas, modificaciones y consultas de inquilinos.
           </p>
         </div>
         <button
@@ -206,11 +222,11 @@ export function Inquilinos() {
             placeholder="Buscar por nombre, DNI, email..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white transition-all text-slate-800"
+            className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white text-slate-800"
           />
         </div>
         <div className="text-xs font-medium text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg w-full sm:w-auto text-center">
-          Total de inquilinos: <span className="font-bold text-slate-700">{inquilinos.length}</span>
+          Total inquilinos: <span className="font-bold text-slate-700">{inquilinos.length}</span>
         </div>
       </div>
 
@@ -225,7 +241,7 @@ export function Inquilinos() {
                 <th className="py-3.5 px-4">DNI</th>
                 <th className="py-3.5 px-4">Teléfono</th>
                 <th className="py-3.5 px-4">Correo Electrónico</th>
-                <th className="py-3.5 px-4 text-center w-32">Acciones</th>
+                <th className="py-3.5 px-4 text-center w-36">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -275,7 +291,14 @@ export function Inquilinos() {
                       </span>
                     </td>
                     <td className="py-3.5 px-4 text-center">
-                      <div className="flex items-center justify-center gap-1.5">
+                      <div className="flex items-center justify-center gap-1">
+                        <button
+                          onClick={() => handleOpenDetailsModal(inquilino)}
+                          className="p-1.5 text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer"
+                          title="Ver detalles completos"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
                         <button
                           onClick={() => handleOpenEditModal(inquilino)}
                           className="p-1.5 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer"
@@ -299,6 +322,71 @@ export function Inquilinos() {
           </table>
         </div>
       </div>
+
+      {/* Modal Detalles */}
+      {isDetailsModalOpen && selectedInquilino && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs animate-in fade-in">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl border border-slate-200 text-left">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                  <User className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900">Detalles del Inquilino</h3>
+                  <span className="text-xs text-slate-400 font-mono">Registro #{selectedInquilino.id}</span>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsDetailsModalOpen(false)}
+                className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-sm">
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 grid grid-cols-2 gap-4">
+                <div>
+                  <span className="text-xs font-semibold uppercase text-slate-400 block mb-1">Nombre Completo</span>
+                  <p className="font-bold text-slate-900">{selectedInquilino.nombre} {selectedInquilino.apellido}</p>
+                </div>
+                <div>
+                  <span className="text-xs font-semibold uppercase text-slate-400 block mb-1">DNI</span>
+                  <p className="font-mono text-slate-700">{selectedInquilino.dni.toLocaleString("es-AR")}</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
+                <div className="flex items-center gap-3">
+                  <Phone className="w-4 h-4 text-indigo-500" />
+                  <div>
+                    <span className="text-xs text-slate-400 block">Teléfono de Contacto</span>
+                    <span className="font-medium text-slate-800">{selectedInquilino.telefono}</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="w-4 h-4 text-indigo-500" />
+                  <div>
+                    <span className="text-xs text-slate-400 block">Correo Electrónico</span>
+                    <span className="font-medium text-slate-800">{selectedInquilino.email}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-100 mt-6">
+              <button
+                type="button"
+                onClick={() => setIsDetailsModalOpen(false)}
+                className="px-4 py-2 text-sm font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal Alta / Modificación */}
       {isModalOpen && (

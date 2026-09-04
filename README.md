@@ -9,27 +9,27 @@
 ---
 
 ## Requisitos
-- Node.js (v18+)
+- Node.js (v18 o superior)
 - Docker y Docker Compose (o PostgreSQL instalado localmente)
 
 ---
 
-## Paso a paso para levantar el proyecto
+## Cómo levantar el proyecto
 
 ### 1. Base de datos (PostgreSQL)
 
-Opción A - Con Docker (recomendado):
+**Opción A - Con Docker (recomendado):**
 Desde la carpeta `server`:
 ```bash
 cd server
 docker-compose up -d
 ```
-> Esto levantará PostgreSQL en el puerto `5434` con la base de datos `inmobiliaria_db`.
+> Levanta PostgreSQL en el puerto `5434` con la base de datos `inmobiliaria_db`.
 
-Opción B - Manual:
-Si usás un PostgreSQL local, podés ejecutar el script `database.sql` incluido en la raíz del proyecto para crear las tablas necesarias (`propietarios` e `inquilinos`).
+**Opción B - Con el script SQL:**
+Si tenés PostgreSQL instalado en tu máquina o querés cargar las tablas manualmente, ejecutá el archivo `database.sql` ubicado en la raíz del proyecto. Crea todas las tablas con sus claves foráneas e incluye datos de prueba iniciales.
 
-*Nota:* Si necesitás sincronizar el esquema usando Drizzle ORM:
+*Para sincronizar el esquema usando Drizzle ORM:*
 ```bash
 cd server
 npx drizzle-kit push
@@ -37,24 +37,24 @@ npx drizzle-kit push
 
 ---
 
-### 2. Backend (API Express)
+### 2. Backend (Servidor Express)
 
-1. Entrar a la carpeta `server` e instalar dependencias (si no se hizo antes):
+1. Entrar a la carpeta `server` e instalar dependencias (si es la primera vez):
    ```bash
    cd server
    npm install
    ```
-2. Iniciar el servidor en modo desarrollo:
+2. Iniciar el servidor:
    ```bash
    npm run dev
    ```
-   El backend quedará corriendo en `http://localhost:5000`.
+   El backend queda escuchando en `http://localhost:5000`.
 
 ---
 
-### 3. Frontend (React + Vite)
+### 3. Frontend (React + Vite + Tailwind)
 
-1. Abrir otra terminal, entrar a `client` e instalar dependencias:
+1. En otra terminal, entrar a la carpeta `client`:
    ```bash
    cd client
    npm install
@@ -67,6 +67,10 @@ npx drizzle-kit push
 
 ---
 
-## Funcionalidades para probar
-- **/propietarios**: ABM completo de propietarios (crear, listar, buscar, editar y eliminar).
-- **/inquilinos**: ABM completo de inquilinos (crear, listar, buscar, editar y eliminar).
+## Módulos y funcionalidades implementadas
+
+- **/inmuebles**: ABM completo de propiedades (crear, listar, buscar, filtrar por tipo/estado, editar y eliminar) con galería de fotos, coordenadas GPS y **vista de detalles** completa con ficha del propietario.
+- **/tipos-inmueble**: ABM de categorías de inmueble (Casa, Departamento, Cabaña, etc.) con **vista de detalles**.
+- **/reservas**: ABM de reservas de estadías con cálculo automático de noches/precio estimado, control de cancelaciones y **vista de detalles**.
+- **/propietarios**: ABM y **vista de detalles** de propietarios de inmuebles.
+- **/inquilinos**: ABM y **vista de detalles** de inquilinos.
